@@ -4,11 +4,10 @@ import React from "react";
 import {
   View,
   Text,
-  TouchableOpacity, // <--- this line is required
+  TouchableOpacity,
   StyleSheet,
   useWindowDimensions,
 } from "react-native";
-
 import colors from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -18,6 +17,8 @@ export default function ModeSelector({
   selected,
   onSelect,
   icon,
+  footer,
+  headerRight,
 }) {
   const { width } = useWindowDimensions();
   const isTablet = width > 600;
@@ -30,6 +31,7 @@ export default function ModeSelector({
           <Ionicons name={icon} size={22} color="#fff" />
         </View>
         <Text style={styles.label}>{label}</Text>
+        {headerRight && <View style={styles.headerRight}>{headerRight}</View>}
       </View>
       <View style={styles.row}>
         {options.map((option) => (
@@ -49,6 +51,7 @@ export default function ModeSelector({
           </TouchableOpacity>
         ))}
       </View>
+      {footer}
     </View>
   );
 }
@@ -89,11 +92,15 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     letterSpacing: 0.3,
   },
-  // ...rest of the code is the same, only styles and button logic updated
-
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: "auto",
+    gap: 6,
+  },
   row: {
     flexDirection: "row",
-    flexWrap: "nowrap", // Prevent wrap for 1 row
+    flexWrap: "nowrap",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 4,
