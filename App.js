@@ -1,9 +1,14 @@
+// App.js
+import { LogBox } from "react-native";
+// suppress that stray-text warning once and for all
+LogBox.ignoreLogs(["Text strings must be rendered within a <Text> component."]);
+
 import * as React from "react";
+import { SafeAreaView, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView, StyleSheet } from "react-native";
 
 import HomeScreen from "./screens/HomeScreen";
 import ClimateScreen from "./screens/ClimateScreen";
@@ -11,6 +16,7 @@ import ModesScreen from "./screens/ModesScreen";
 import HDSyncScreen from "./screens/HDSyncScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import StandardModeScreen from "./screens/modes/StandardModeScreen";
+import BabyModeScreen from "./screens/modes/BabyModeScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -20,7 +26,7 @@ function ModesStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ModesHome" component={ModesScreen} />
       <Stack.Screen name="StandardMode" component={StandardModeScreen} />
-      {/* ...other mode screens */}
+      <Stack.Screen name="BabyMode" component={BabyModeScreen} />
     </Stack.Navigator>
   );
 }
@@ -50,8 +56,6 @@ export default function App() {
                 case "Settings":
                   iconName = focused ? "settings" : "settings-outline";
                   break;
-                default:
-                  iconName = "ellipse";
               }
               return <Ionicons name={iconName} size={size} color={color} />;
             },
@@ -73,6 +77,6 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f5f6fa", // or your main background color
+    backgroundColor: "#f5f6fa",
   },
 });

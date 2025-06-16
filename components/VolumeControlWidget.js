@@ -1,3 +1,5 @@
+// components/VolumeControlWidget.js
+
 import React from "react";
 import {
   View,
@@ -22,6 +24,9 @@ export default function VolumeControlWidget({
   const isTablet = width > 600;
   const widgetWidth = isTablet ? 500 : width * 0.9;
 
+  // Round to nearest integer
+  const displayValue = Math.round(value);
+
   return (
     <View style={[styles.card, { width: widgetWidth, alignSelf: "center" }]}>
       <View style={styles.header}>
@@ -41,6 +46,7 @@ export default function VolumeControlWidget({
         style={{ width: "100%", marginTop: 18 }}
         minimumValue={0}
         maximumValue={100}
+        step={5} // 5% steps
         value={value}
         onValueChange={onValueChange}
         minimumTrackTintColor={colors.primary}
@@ -48,7 +54,7 @@ export default function VolumeControlWidget({
         thumbTintColor={colors.primary}
         disabled={!enabled}
       />
-      <Text style={styles.valueText}>{value}</Text>
+      <Text style={styles.valueText}>{displayValue}%</Text> {/* integer-only */}
     </View>
   );
 }

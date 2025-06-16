@@ -60,7 +60,7 @@ const MODES = [
       />
     ),
     color: "#65d4ff",
-    // screen: "BabyMode"
+    screen: "BabyMode", // ← updated to match App.js registration
   },
   {
     key: "Security",
