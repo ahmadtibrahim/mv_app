@@ -9,41 +9,47 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import colors from "../constants/colors";
 
-// Use components as icon for Baby mode, strings for others
+// List of modes
 const MODES = [
   {
     key: "Standard",
     icon: <Ionicons name="apps" size={32} color="#fff" />,
     color: "#3c82f7",
+    screen: "StandardMode",
   },
   {
     key: "Game",
     icon: <Ionicons name="game-controller" size={32} color="#fff" />,
     color: "#a259fa",
+    // screen: "GameMode"
   },
   {
     key: "Movie",
     icon: <Ionicons name="film" size={32} color="#fff" />,
     color: "#ff6954",
+    // screen: "MovieMode"
   },
   {
     key: "Party",
     icon: <Ionicons name="balloon" size={32} color="#fff" />,
     color: "#f4c141",
+    // screen: "PartyMode"
   },
   {
     key: "Relax",
     icon: <Ionicons name="cafe" size={32} color="#fff" />,
     color: "#50e3c2",
+    // screen: "RelaxMode"
   },
   {
     key: "Karaoke",
     icon: <Ionicons name="mic" size={32} color="#fff" />,
     color: "#ff85a1",
+    // screen: "KaraokeMode"
   },
-  // BABY mode uses MaterialCommunityIcons baby bottle
   {
     key: "Baby",
     icon: (
@@ -54,15 +60,18 @@ const MODES = [
       />
     ),
     color: "#65d4ff",
+    // screen: "BabyMode"
   },
   {
     key: "Security",
     icon: <Ionicons name="shield-checkmark" size={32} color="#fff" />,
     color: "#677cf5",
+    // screen: "SecurityMode"
   },
 ];
 
 export default function ModesScreen() {
+  const navigation = useNavigation();
   const { width } = useWindowDimensions();
   const isTablet = width > 600;
   const widgetWidth = isTablet ? 500 : width * 0.9;
@@ -71,12 +80,12 @@ export default function ModesScreen() {
     <View style={[styles.container, { width: widgetWidth }]}>
       <Text style={styles.title}>Modes</Text>
       <View style={styles.grid}>
-        {MODES.map(({ key, icon, color }) => (
+        {MODES.map(({ key, icon, color, screen }) => (
           <TouchableOpacity
             key={key}
             style={styles.modeButton}
             activeOpacity={0.7}
-            // onPress={() => navigation.navigate(key)}  // link later
+            onPress={screen ? () => navigation.navigate(screen) : undefined}
           >
             <View style={[styles.iconCircle, { backgroundColor: color }]}>
               {icon}
