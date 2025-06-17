@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 import React, { useState } from "react";
 import {
   LogBox,
@@ -14,6 +15,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
 
+
 import TopBar from "./components/TopBar";
 import HomeScreen from "./screens/HomeScreen";
 import ClimateScreen from "./screens/ClimateScreen";
@@ -22,6 +24,7 @@ import HDSyncScreen from "./screens/HDSyncScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import StandardModeScreen from "./screens/modes/StandardModeScreen";
 import BabyModeScreen from "./screens/modes/BabyModeScreen";
+import PartyModeScreen from "./screens/modes/PartyModeScreen";
 
 LogBox.ignoreLogs(["Text strings must be rendered within a <Text> component"]);
 
@@ -52,6 +55,9 @@ function ModesStack({ connectedChair }) {
         {(props) => (
           <StandardModeScreen {...props} disabled={!connectedChair} />
         )}
+      </Stack.Screen>
+      <Stack.Screen name="PartyMode">
+        {(props) => <PartyModeScreen {...props} disabled={!connectedChair} />}
       </Stack.Screen>
       <Stack.Screen name="BabyMode">
         {(props) => (

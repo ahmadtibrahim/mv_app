@@ -36,7 +36,7 @@ const MODES = [
     key: "Party",
     icon: <Ionicons name="balloon" size={32} color="#fff" />,
     color: "#f4c141",
-    // screen: "PartyMode"
+    screen: "PartyMode",
   },
   {
     key: "Relax",
