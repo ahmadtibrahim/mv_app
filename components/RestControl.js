@@ -1,4 +1,4 @@
-// components/RestControl.js
+// /components/RestControl.js
 
 import React from "react";
 import {
@@ -10,19 +10,40 @@ import {
 } from "react-native";
 import colors from "../constants/colors";
 
-export default function RestControl({ label, onPress }) {
+export default function RestControl({ label, onPress, disabled = false }) {
   const { width } = useWindowDimensions();
   const isTablet = width > 600;
   const widgetWidth = isTablet ? 500 : width * 0.9;
 
   return (
-    <View style={[styles.card, { width: widgetWidth, alignSelf: "center" }]}>
+    <View
+      style={[
+        styles.card,
+        {
+          width: widgetWidth,
+          alignSelf: "center",
+          opacity: disabled ? 0.5 : 1,
+        },
+      ]}
+    >
       <Text style={styles.label}>{label}</Text>
       <View style={styles.row}>
-        <ControlButton label="≪" onPress={() => onPress("back_fast")} />
-        <ControlButton label="＜" onPress={() => onPress("back")} />
-        <ControlButton label="＞" onPress={() => onPress("forward")} />
-        <ControlButton label="≫" onPress={() => onPress("forward_fast")} />
+        <ControlButton
+          label="≪"
+          onPress={() => !disabled && onPress("back_fast")}
+        />
+        <ControlButton
+          label="＜"
+          onPress={() => !disabled && onPress("back")}
+        />
+        <ControlButton
+          label="＞"
+          onPress={() => !disabled && onPress("forward")}
+        />
+        <ControlButton
+          label="≫"
+          onPress={() => !disabled && onPress("forward_fast")}
+        />
       </View>
     </View>
   );

@@ -1,10 +1,9 @@
-// components\LightModeWidget.js
+// /components/LightModeWidget.js
 
 import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Switch,
   ToastAndroid,
@@ -13,6 +12,8 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
+import gStyles from "../constants/globalStyles";
+import colors from "../constants/colors";
 
 const COLORS = [
   "#ff4444",
@@ -56,35 +57,40 @@ const defaultZoneSettings = {
 function Snackbar({ visible, message }) {
   if (!visible) return null;
   return (
-    <View style={styles.snackbar}>
-      <Text style={styles.snackbarText}>{message}</Text>
+    <View
+      style={{
+        position: "absolute",
+        bottom: 10,
+        left: 30,
+        right: 30,
+        backgroundColor: colors.primary,
+        borderRadius: 12,
+        padding: 10,
+        zIndex: 1000,
+      }}
+    >
+      <Text style={{ color: "#fff", textAlign: "center", fontWeight: "600" }}>
+        {message}
+      </Text>
     </View>
   );
 }
 
-export default function LightModeWidget() {
+export default function LightModeWidget({ disabled = false }) {
   const [advanced, setAdvanced] = useState(false);
-
-  // Basic (non-advanced)
   const [basicMode, setBasicMode] = useState("Off");
   const [basicBrightness, setBasicBrightness] = useState(50);
   const [basicColor, setBasicColor] = useState(COLORS[0]);
   const [basicTone, setBasicTone] = useState(3);
   const [toneActiveBasic, setToneActiveBasic] = useState(null);
 
-  // Advanced: Armrest (both sides together)
   const [armrest, setArmrest] = useState({ ...defaultZoneSettings });
   const [toneActiveArmrest, setToneActiveArmrest] = useState(null);
-
-  // Advanced: Speaker front
   const [speakerFront, setSpeakerFront] = useState({ ...defaultZoneSettings });
   const [toneActiveFront, setToneActiveFront] = useState(null);
-
-  // Advanced: Speaker back
   const [speakerBack, setSpeakerBack] = useState({ ...defaultZoneSettings });
   const [toneActiveBack, setToneActiveBack] = useState(null);
 
-  // Snackbar/Toast state
   const [snackbar, setSnackbar] = useState({ visible: false, message: "" });
 
   function showToast(msg) {
@@ -101,26 +107,22 @@ export default function LightModeWidget() {
     setToneActiveBasic(null);
     showToast("Restored basic settings");
   }
-
   function restoreArmrest() {
     setArmrest({ ...defaultZoneSettings });
     setToneActiveArmrest(null);
     showToast("Restored armrest lights");
   }
-
   function restoreSpeakerFront() {
     setSpeakerFront({ ...defaultZoneSettings });
     setToneActiveFront(null);
     showToast("Restored speaker front lights");
   }
-
   function restoreSpeakerBack() {
     setSpeakerBack({ ...defaultZoneSettings });
     setToneActiveBack(null);
     showToast("Restored speaker back lights");
   }
 
-  // ---- Rendering reusable swatch grid ----
   function renderSwatchGrid(
     selectedColor,
     setColor,
@@ -131,40 +133,47 @@ export default function LightModeWidget() {
   ) {
     return (
       <View style={{ marginTop: 6 }}>
-        <View style={styles.swatchHeader}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={{ fontSize: 13, color: "#397afc" }}>Color Swatch</Text>
           <TouchableOpacity
             style={{ marginLeft: 8 }}
             onPress={() =>
               showToast("Tip: Long-press a color to adjust its tone!")
             }
+            disabled={disabled}
           >
             <Ionicons name="help-circle-outline" size={18} color="#397afc" />
           </TouchableOpacity>
         </View>
-        <View style={styles.swatchGrid}>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 5 }}>
           {COLORS.map((c) => {
             const isSelected = selectedColor === c;
             const swatchColor = getToneColor(c, isSelected ? tone : 3);
             return (
               <TouchableOpacity
                 key={c}
-                style={[
-                  styles.swatch,
-                  {
-                    backgroundColor: swatchColor,
-                    borderWidth: isSelected ? 3 : 1,
-                    borderColor: isSelected ? "#397afc" : "#bbb",
-                  },
-                ]}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: swatchColor,
+                  margin: 5,
+                  borderWidth: isSelected ? 3 : 1,
+                  borderColor: isSelected ? "#397afc" : "#bbb",
+                }}
                 onPress={() => {
+                  if (disabled) return;
                   setColor(c);
                   setTone(3);
                   setToneActive(null);
                 }}
-                onLongPress={() => setToneActive(c)}
+                onLongPress={() => {
+                  if (disabled) return;
+                  setToneActive(c);
+                }}
                 delayLongPress={250}
                 activeOpacity={0.7}
+                disabled={disabled}
               />
             );
           })}
@@ -173,7 +182,6 @@ export default function LightModeWidget() {
     );
   }
 
-  // ---- Rendering reusable tone slider ----
   function renderToneSlider(
     selectedColor,
     tone,
@@ -183,8 +191,10 @@ export default function LightModeWidget() {
   ) {
     if (!toneActive || selectedColor !== toneActive) return null;
     return (
-      <View style={styles.toneRow}>
-        <Text style={styles.toneLabel}>Tone</Text>
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}
+      >
+        <Text style={{ color: "#397afc", fontWeight: "600" }}>Tone</Text>
         <Slider
           style={{ width: 130, marginHorizontal: 10 }}
           minimumValue={1}
@@ -195,8 +205,9 @@ export default function LightModeWidget() {
           minimumTrackTintColor="#397afc"
           maximumTrackTintColor="#ccc"
           thumbTintColor={getToneColor(selectedColor, tone)}
+          disabled={disabled}
         />
-        <Text style={styles.toneLabel}>Level {tone}</Text>
+        <Text style={{ color: "#397afc" }}>Level {tone}</Text>
         <TouchableOpacity
           onPress={() => setToneActive(null)}
           style={{
@@ -206,6 +217,7 @@ export default function LightModeWidget() {
             paddingHorizontal: 14,
             paddingVertical: 5,
           }}
+          disabled={disabled}
         >
           <Text style={{ color: "#fff", fontWeight: "600", fontSize: 15 }}>
             Done
@@ -215,37 +227,47 @@ export default function LightModeWidget() {
     );
   }
 
-  // ---- Rendering reusable preview circle ----
   function renderPreviewCircle(selectedColor, tone, label) {
     return (
       <View style={{ alignItems: "center", marginTop: 5 }}>
         <View
-          style={[
-            styles.previewCircle,
-            {
-              backgroundColor: getToneColor(selectedColor, tone),
-              borderColor: "#397afc",
-            },
-          ]}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: getToneColor(selectedColor, tone),
+            borderColor: "#397afc",
+            borderWidth: 2,
+            marginBottom: 2,
+          }}
         />
-        <Text style={styles.affectsLabel}>{label}</Text>
+        <Text style={{ fontSize: 11, color: colors.secondary }}>{label}</Text>
       </View>
     );
   }
 
   // UI
   return (
-    <View style={styles.card}>
+    <View style={[gStyles.card, disabled && { opacity: 0.5 }]}>
       <Snackbar visible={snackbar.visible} message={snackbar.message} />
-      <Text style={styles.label}>Light Mode</Text>
+      <Text style={gStyles.label}>Light Mode</Text>
       {!advanced && (
         <>
-          <View style={styles.pickerWrap}>
+          <View
+            style={{
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: "#397afc",
+              backgroundColor: "#f6f6f8",
+              marginBottom: 8,
+              overflow: "hidden",
+            }}
+          >
             <Picker
               selectedValue={basicMode}
               onValueChange={setBasicMode}
-              style={styles.picker}
               dropdownIconColor="#397afc"
+              enabled={!disabled}
             >
               <Picker.Item label="Off" value="Off" />
               <Picker.Item label="Solid" value="Solid" />
@@ -254,7 +276,7 @@ export default function LightModeWidget() {
               <Picker.Item label="Rainbow" value="Rainbow" />
             </Picker>
           </View>
-          <Text style={styles.label}>Brightness</Text>
+          <Text style={gStyles.label}>Brightness</Text>
           <Slider
             style={{ width: "100%", marginVertical: 6 }}
             minimumValue={0}
@@ -265,6 +287,7 @@ export default function LightModeWidget() {
             minimumTrackTintColor="#397afc"
             maximumTrackTintColor="#ccc"
             thumbTintColor="#7e46fa"
+            disabled={disabled}
           />
           {basicMode === "Solid" &&
             renderSwatchGrid(
@@ -286,10 +309,19 @@ export default function LightModeWidget() {
           {basicMode === "Solid" &&
             renderPreviewCircle(basicColor, basicTone, "Affects: All Zones")}
           <TouchableOpacity
-            style={styles.restoreButton}
+            style={{
+              marginTop: 10,
+              backgroundColor: "#397afc",
+              borderRadius: 8,
+              padding: 9,
+              alignSelf: "center",
+            }}
             onPress={restoreAllBasic}
+            disabled={disabled}
           >
-            <Text style={styles.restoreButtonText}>Restore to Default</Text>
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>
+              Restore to Default
+            </Text>
           </TouchableOpacity>
         </>
       )}
@@ -297,7 +329,11 @@ export default function LightModeWidget() {
       <View
         style={{ flexDirection: "row", alignItems: "center", marginTop: 8 }}
       >
-        <Switch value={advanced} onValueChange={setAdvanced} />
+        <Switch
+          value={advanced}
+          onValueChange={setAdvanced}
+          disabled={disabled}
+        />
         <Text style={{ marginLeft: 8, color: "#397afc", fontWeight: "bold" }}>
           Advanced Setup
         </Text>
@@ -307,15 +343,26 @@ export default function LightModeWidget() {
         <>
           {/* Armrest */}
           <View style={{ marginTop: 10 }}>
-            <Text style={styles.advTitle}>Armrest Light Control</Text>
-            <View style={styles.pickerWrap}>
+            <Text style={[gStyles.label, { fontSize: 15 }]}>
+              Armrest Light Control
+            </Text>
+            <View
+              style={{
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: "#397afc",
+                backgroundColor: "#f6f6f8",
+                marginBottom: 8,
+                overflow: "hidden",
+              }}
+            >
               <Picker
                 selectedValue={armrest.mode}
                 onValueChange={(v) =>
                   setArmrest((prev) => ({ ...prev, mode: v }))
                 }
-                style={styles.picker}
                 dropdownIconColor="#397afc"
+                enabled={!disabled}
               >
                 <Picker.Item label="Off" value="Off" />
                 <Picker.Item label="Solid" value="Solid" />
@@ -324,7 +371,7 @@ export default function LightModeWidget() {
                 <Picker.Item label="Rainbow" value="Rainbow" />
               </Picker>
             </View>
-            <Text style={styles.label}>Brightness</Text>
+            <Text style={gStyles.label}>Brightness</Text>
             <Slider
               style={{ width: "100%", marginVertical: 6 }}
               minimumValue={0}
@@ -337,6 +384,7 @@ export default function LightModeWidget() {
               minimumTrackTintColor="#397afc"
               maximumTrackTintColor="#ccc"
               thumbTintColor="#7e46fa"
+              disabled={disabled}
             />
             {armrest.mode === "Solid" &&
               renderSwatchGrid(
@@ -362,24 +410,44 @@ export default function LightModeWidget() {
                 "Affects: Both Armrests"
               )}
             <TouchableOpacity
-              style={styles.restoreButton}
+              style={{
+                marginTop: 8,
+                backgroundColor: "#397afc",
+                borderRadius: 8,
+                padding: 9,
+                alignSelf: "center",
+              }}
               onPress={restoreArmrest}
+              disabled={disabled}
             >
-              <Text style={styles.restoreButtonText}>Restore Armrest</Text>
+              <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                Restore Armrest
+              </Text>
             </TouchableOpacity>
           </View>
 
           {/* Speaker: Front */}
           <View style={{ marginTop: 20 }}>
-            <Text style={styles.advTitle}>Speaker Front Light Control</Text>
-            <View style={styles.pickerWrap}>
+            <Text style={[gStyles.label, { fontSize: 15 }]}>
+              Speaker Front Light Control
+            </Text>
+            <View
+              style={{
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: "#397afc",
+                backgroundColor: "#f6f6f8",
+                marginBottom: 8,
+                overflow: "hidden",
+              }}
+            >
               <Picker
                 selectedValue={speakerFront.mode}
                 onValueChange={(v) =>
                   setSpeakerFront((prev) => ({ ...prev, mode: v }))
                 }
-                style={styles.picker}
                 dropdownIconColor="#397afc"
+                enabled={!disabled}
               >
                 <Picker.Item label="Off" value="Off" />
                 <Picker.Item label="Solid" value="Solid" />
@@ -388,7 +456,7 @@ export default function LightModeWidget() {
                 <Picker.Item label="Rainbow" value="Rainbow" />
               </Picker>
             </View>
-            <Text style={styles.label}>Brightness</Text>
+            <Text style={gStyles.label}>Brightness</Text>
             <Slider
               style={{ width: "100%", marginVertical: 6 }}
               minimumValue={0}
@@ -401,6 +469,7 @@ export default function LightModeWidget() {
               minimumTrackTintColor="#397afc"
               maximumTrackTintColor="#ccc"
               thumbTintColor="#7e46fa"
+              disabled={disabled}
             />
             {speakerFront.mode === "Solid" &&
               renderSwatchGrid(
@@ -426,24 +495,44 @@ export default function LightModeWidget() {
                 "Affects: Front Speakers"
               )}
             <TouchableOpacity
-              style={styles.restoreButton}
+              style={{
+                marginTop: 8,
+                backgroundColor: "#397afc",
+                borderRadius: 8,
+                padding: 9,
+                alignSelf: "center",
+              }}
               onPress={restoreSpeakerFront}
+              disabled={disabled}
             >
-              <Text style={styles.restoreButtonText}>Restore Front</Text>
+              <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                Restore Front
+              </Text>
             </TouchableOpacity>
           </View>
 
           {/* Speaker: Back */}
           <View style={{ marginTop: 20 }}>
-            <Text style={styles.advTitle}>Speaker Back Light Control</Text>
-            <View style={styles.pickerWrap}>
+            <Text style={[gStyles.label, { fontSize: 15 }]}>
+              Speaker Back Light Control
+            </Text>
+            <View
+              style={{
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: "#397afc",
+                backgroundColor: "#f6f6f8",
+                marginBottom: 8,
+                overflow: "hidden",
+              }}
+            >
               <Picker
                 selectedValue={speakerBack.mode}
                 onValueChange={(v) =>
                   setSpeakerBack((prev) => ({ ...prev, mode: v }))
                 }
-                style={styles.picker}
                 dropdownIconColor="#397afc"
+                enabled={!disabled}
               >
                 <Picker.Item label="Off" value="Off" />
                 <Picker.Item label="Solid" value="Solid" />
@@ -452,7 +541,7 @@ export default function LightModeWidget() {
                 <Picker.Item label="Rainbow" value="Rainbow" />
               </Picker>
             </View>
-            <Text style={styles.label}>Brightness</Text>
+            <Text style={gStyles.label}>Brightness</Text>
             <Slider
               style={{ width: "100%", marginVertical: 6 }}
               minimumValue={0}
@@ -465,6 +554,7 @@ export default function LightModeWidget() {
               minimumTrackTintColor="#397afc"
               maximumTrackTintColor="#ccc"
               thumbTintColor="#7e46fa"
+              disabled={disabled}
             />
             {speakerBack.mode === "Solid" &&
               renderSwatchGrid(
@@ -490,10 +580,19 @@ export default function LightModeWidget() {
                 "Affects: Back Speakers"
               )}
             <TouchableOpacity
-              style={styles.restoreButton}
+              style={{
+                marginTop: 8,
+                backgroundColor: "#397afc",
+                borderRadius: 8,
+                padding: 9,
+                alignSelf: "center",
+              }}
               onPress={restoreSpeakerBack}
+              disabled={disabled}
             >
-              <Text style={styles.restoreButtonText}>Restore Back</Text>
+              <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                Restore Back
+              </Text>
             </TouchableOpacity>
           </View>
         </>
@@ -501,135 +600,3 @@ export default function LightModeWidget() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 18,
-    padding: 14,
-    marginVertical: 12,
-    borderWidth: 1,
-    borderColor: "#97dbfc",
-    width: "95%",
-    alignSelf: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-  },
-  label: {
-    fontWeight: "700",
-    fontSize: 16,
-    color: "#397afc",
-    marginBottom: 4,
-    marginTop: 6,
-  },
-  pickerWrap: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#b6e1fa",
-    backgroundColor: "#f8faff",
-    marginBottom: 8,
-    overflow: "hidden",
-    width: "100%",
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  picker: {
-    flex: 1,
-    color: "#244173",
-    fontSize: 16,
-    paddingLeft: 8,
-    minHeight: 44,
-    width: "100%",
-  },
-  swatchHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 3,
-  },
-  swatchGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 2,
-    justifyContent: "space-between",
-  },
-  swatch: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    margin: 6,
-    borderColor: "#99cafc",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  toneRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 4,
-    marginBottom: 6,
-    justifyContent: "center",
-  },
-  toneLabel: {
-    color: "#397afc",
-    fontWeight: "600",
-    fontSize: 14,
-    marginHorizontal: 4,
-  },
-  previewCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    marginTop: 10,
-    alignSelf: "center",
-    borderWidth: 2,
-  },
-  restoreButton: {
-    marginTop: 12,
-    alignSelf: "center",
-    backgroundColor: "#f3f6fd",
-    borderColor: "#397afc",
-    borderWidth: 1.4,
-    borderRadius: 12,
-    paddingHorizontal: 22,
-    paddingVertical: 8,
-  },
-  restoreButtonText: {
-    color: "#397afc",
-    fontWeight: "bold",
-    fontSize: 15,
-    letterSpacing: 0.5,
-  },
-  advTitle: {
-    fontSize: 17,
-    fontWeight: "700",
-    marginBottom: 4,
-    marginTop: 4,
-    color: "#4b7bec",
-  },
-  affectsLabel: {
-    marginTop: 6,
-    fontSize: 13,
-    color: "#829fd8",
-    fontWeight: "600",
-    letterSpacing: 0.3,
-  },
-  snackbar: {
-    position: "absolute",
-    bottom: 14,
-    left: 0,
-    right: 0,
-    alignSelf: "center",
-    backgroundColor: "#397afc",
-    borderRadius: 18,
-    paddingVertical: 10,
-    paddingHorizontal: 22,
-    zIndex: 10,
-    alignItems: "center",
-    elevation: 4,
-  },
-  snackbarText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 15,
-  },
-});

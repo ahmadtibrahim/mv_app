@@ -1,17 +1,18 @@
-// components/LiveCam.js
+// /components/LiveCam.js
 
 import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   Pressable,
   ImageBackground,
   Modal,
   Dimensions,
+  StyleSheet,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import colors from "../constants/colors";
+import gStyles from "../constants/globalStyles";
 
 const { width, height } = Dimensions.get("window");
 
@@ -29,7 +30,7 @@ export default function LiveCam({
 
   const handleToggleLive = () => {
     if (!liveActive) {
-      onPressSnapshot(); // calls parent log once
+      onPressSnapshot();
     } else {
       console.log("Snap mode activated");
     }
@@ -60,8 +61,8 @@ export default function LiveCam({
     );
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>Live Cam</Text>
+    <View style={[gStyles.card, styles.card]}>
+      <Text style={[gStyles.label, styles.title]}>Live Cam</Text>
 
       <Modal
         visible={isFullscreen}
@@ -127,22 +128,13 @@ export default function LiveCam({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: 18,
+    // Only override card-specific tweaks, leave color/border/shadow to gStyles.card!
     padding: 16,
     marginVertical: 10,
-    elevation: 3,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.13,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
+    borderRadius: 18,
   },
   title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.primary,
+    // This lets you tweak label size/weight globally and only override here if needed
     marginBottom: 8,
   },
   snapshot: {

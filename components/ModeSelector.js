@@ -1,14 +1,15 @@
-// components/ModeSelector.js
+// /components/ModeSelector.js
 
 import React from "react";
 import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   useWindowDimensions,
+  StyleSheet,
 } from "react-native";
 import colors from "../constants/colors";
+import gStyles from "../constants/globalStyles";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ModeSelector({
@@ -25,23 +26,34 @@ export default function ModeSelector({
   const widgetWidth = isTablet ? 500 : width * 0.9;
 
   return (
-    <View style={[styles.card, { width: widgetWidth, alignSelf: "center" }]}>
+    <View
+      style={[
+        gStyles.card,
+        styles.card,
+        { width: widgetWidth, alignSelf: "center" },
+      ]}
+    >
       <View style={styles.titleRow}>
         <View style={styles.iconCircle}>
           <Ionicons name={icon} size={22} color="#fff" />
         </View>
-        <Text style={styles.label}>{label}</Text>
+        <Text style={[gStyles.label, styles.label]}>{label}</Text>
         {headerRight && <View style={styles.headerRight}>{headerRight}</View>}
       </View>
       <View style={styles.row}>
         {options.map((option) => (
           <TouchableOpacity
             key={option}
-            style={[styles.button, selected === option && styles.buttonActive]}
+            style={[
+              styles.button,
+              selected === option && styles.buttonActive,
+              gStyles.button,
+            ]}
             onPress={() => onSelect(option)}
           >
             <Text
               style={[
+                gStyles.buttonText,
                 styles.buttonText,
                 selected === option && styles.buttonTextActive,
               ]}
@@ -58,17 +70,9 @@ export default function ModeSelector({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: 18,
     padding: 16,
     marginVertical: 10,
-    elevation: 3,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.14,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
+    borderRadius: 18,
   },
   titleRow: {
     flexDirection: "row",
@@ -119,7 +123,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   buttonActive: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.surface,
     borderColor: colors.primary,
   },
   buttonText: {

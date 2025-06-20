@@ -1,157 +1,164 @@
-// components\TopBar.js
+// /components/TopBar.js
 
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  useWindowDimensions,
-  Platform,
-} from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import { View, Text, TouchableOpacity, Modal, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { availableChairs } from "../data/availableChairs";
 import colors from "../constants/colors";
+import gStyles from "../constants/globalStyles";
+import { useParty } from "../contexts/PartyContext";
+import { availableChairs as availableChairsRaw } from "../data/availableChairs"; // use named import
 
-export default function TopBar({ connectedChair, onConnect, onDisconnect }) {
-  const [discovered, setDiscovered] = useState([]);
-  const [selectedChair, setSelectedChair] = useState(null);
-  const { width } = useWindowDimensions();
-  const widgetWidth = width > 600 ? 500 : width * 0.9;
+export default function TopBar() {
+  const {
+    connectedChair,
+    setConnectedChair,
+    discoveredChairs = [],
+    setDiscoveredChairs,
+  } = useParty();
 
-  const discover = () => {
-    setDiscovered(availableChairs);
-    setSelectedChair(null);
-    onDisconnect?.();
-  };
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const chairName = availableChairs.find((c) => c.id === connectedChair)?.name;
+  // Ensure availableChairs is always an array
+  const availableChairs = Array.isArray(availableChairsRaw)
+    ? availableChairsRaw
+    : [];
+  const chairsToShow =
+    Array.isArray(discoveredChairs) && discoveredChairs.length
+      ? discoveredChairs
+      : availableChairs;
+
+  const btColor = chairsToShow.length ? colors.primary : colors.secondary;
 
   return (
-    <View style={[styles.container, { width: widgetWidth }]}>
-      <View style={styles.left}>
-        <TouchableOpacity onPress={discover} style={styles.iconButton}>
-          <Ionicons
-            name="bluetooth"
-            size={28}
-            color={discovered.length ? colors.primary : colors.secondary}
-          />
-        </TouchableOpacity>
+    <View style={gStyles.header}>
+      <TouchableOpacity
+        onPress={() => setDiscoveredChairs(availableChairs)}
+        style={{ marginRight: 10 }}
+      >
+        <Ionicons name="bluetooth" size={28} color={btColor} />
+      </TouchableOpacity>
 
-        {!connectedChair && discovered.length > 0 && (
-          <Picker
-            selectedValue={selectedChair}
-            style={styles.picker}
-            itemStyle={styles.pickerItem}
-            onValueChange={(v) => setSelectedChair(v)}
-            mode="dropdown"
-          >
-            <Picker.Item label="Select Chair…" value={null} />
-            {discovered.map((c) => (
-              <Picker.Item
-                key={c.id}
-                label={c.name}
-                value={c.id}
-                color={colors.primary}
-              />
-            ))}
-          </Picker>
-        )}
-
-        {connectedChair && (
-          <Text style={styles.connectedText}>{chairName}</Text>
-        )}
-      </View>
-
-      <View style={styles.right}>
-        {!connectedChair ? (
-          discovered.length > 0 && (
-            <TouchableOpacity
-              style={[styles.btn, !selectedChair && { opacity: 0.5 }]}
-              disabled={!selectedChair}
-              onPress={() => onConnect(selectedChair)}
-            >
-              <Text style={styles.btnText}>Connect</Text>
-            </TouchableOpacity>
-          )
-        ) : (
-          <TouchableOpacity
-            style={styles.btn}
-            onPress={() => {
-              onDisconnect();
-              setDiscovered([]);
-              setSelectedChair(null);
+      {connectedChair ? (
+        <>
+          <Text
+            style={{
+              fontWeight: "600",
+              color: colors.primary,
+              flex: 1,
+              fontSize: 16,
+              marginLeft: 10,
             }}
           >
-            <Text style={styles.btnText}>Disconnect</Text>
+            {connectedChair.name}
+          </Text>
+          <TouchableOpacity
+            style={{
+              minWidth: 100,
+              paddingVertical: 8,
+              paddingHorizontal: 20,
+              backgroundColor: colors.primary,
+              borderRadius: 8,
+              alignItems: "center",
+              justifyContent: "center",
+              marginLeft: 12,
+            }}
+            onPress={() => setConnectedChair(null)}
+          >
+            <Text style={{ color: "#fff", fontWeight: "600", fontSize: 15 }}>
+              Disconnect
+            </Text>
           </TouchableOpacity>
-        )}
-      </View>
+        </>
+      ) : (
+        <>
+          <TouchableOpacity
+            style={{
+              minWidth: 100,
+              paddingVertical: 8,
+              paddingHorizontal: 20,
+              backgroundColor: colors.primary,
+              borderRadius: 8,
+              alignItems: "center",
+              justifyContent: "center",
+              marginLeft: 12,
+            }}
+            onPress={() => setModalVisible(true)}
+            disabled={!chairsToShow.length}
+          >
+            <Text style={{ color: "#fff", fontWeight: "600", fontSize: 15 }}>
+              {chairsToShow.length ? "Select Chair" : "No Chairs"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Chair selection modal */}
+          <Modal visible={modalVisible} transparent animationType="slide">
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "rgba(0,0,0,0.4)",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "#fff",
+                  borderRadius: 16,
+                  padding: 20,
+                  width: 300,
+                  elevation: 7,
+                  shadowColor: "#222",
+                }}
+              >
+                <Text
+                  style={{ fontWeight: "700", fontSize: 18, marginBottom: 16 }}
+                >
+                  Select a Chair
+                </Text>
+                <FlatList
+                  data={chairsToShow}
+                  keyExtractor={(item) => item.id?.toString() ?? item.name}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={{
+                        padding: 14,
+                        borderBottomWidth: 1,
+                        borderBottomColor: "#f2f2f2",
+                      }}
+                      onPress={() => {
+                        setConnectedChair(item);
+                        setModalVisible(false);
+                      }}
+                    >
+                      <Text style={{ fontSize: 16, color: colors.primary }}>
+                        {item.name || item.id}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  ListEmptyComponent={<Text>No chairs found.</Text>}
+                />
+                <TouchableOpacity
+                  style={{
+                    marginTop: 18,
+                    alignSelf: "center",
+                    backgroundColor: colors.primary,
+                    borderRadius: 8,
+                    paddingVertical: 10,
+                    paddingHorizontal: 30,
+                  }}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text
+                    style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}
+                  >
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </>
+      )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignSelf: "center",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: colors.surface,
-    borderRadius: 18,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginVertical: 10,
-    elevation: 3,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.13,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
-  },
-  left: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  iconButton: {
-    padding: 8,
-  },
-  picker: {
-    flex: 1,
-    height: 50,
-    marginLeft: 12,
-    color: colors.primary,
-  },
-  pickerItem: {
-    height: 50,
-    fontSize: 16,
-  },
-  connectedText: {
-    marginLeft: 12,
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.primary,
-  },
-  right: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  btn: {
-    minWidth: 100,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: 12,
-  },
-  btnText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-});

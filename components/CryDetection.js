@@ -1,7 +1,10 @@
+// /components/CryDetection.js
+
 import React from "react";
 import { View, Text, StyleSheet, Switch } from "react-native";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import colors from "../constants/colors";
+import gStyles from "../constants/globalStyles";
 
 export default function CryDetection({
   cryEnabled = false,
@@ -10,7 +13,7 @@ export default function CryDetection({
   onLiveToggle = () => {},
 }) {
   return (
-    <View style={styles.card}>
+    <View style={[gStyles.card, styles.card]}>
       <View style={styles.row}>
         <MaterialCommunityIcons
           name="baby-face-outline"
@@ -18,8 +21,10 @@ export default function CryDetection({
           color={colors.primary}
         />
         <View style={styles.texts}>
-          <Text style={styles.title}>Cry Detection</Text>
-          <Text style={styles.subtitle}>Tap to enable/disable</Text>
+          <Text style={[gStyles.label, styles.title]}>Cry Detection</Text>
+          <Text style={[gStyles.subLabel, styles.subtitle]}>
+            Tap to enable/disable
+          </Text>
         </View>
         <Switch
           value={cryEnabled}
@@ -33,8 +38,10 @@ export default function CryDetection({
       <View style={styles.row}>
         <Ionicons name="ear-outline" size={20} color={colors.primary} />
         <View style={styles.texts}>
-          <Text style={styles.title}>Live Hear</Text>
-          <Text style={styles.subtitle}>Keep mic on for live audio</Text>
+          <Text style={[gStyles.label, styles.title]}>Live Hear</Text>
+          <Text style={[gStyles.subLabel, styles.subtitle]}>
+            Keep mic on for live audio
+          </Text>
         </View>
         <Switch
           value={liveEnabled}
@@ -50,17 +57,9 @@ export default function CryDetection({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: 18,
     padding: 16,
     marginVertical: 5,
-    elevation: 3,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.13,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
+    borderRadius: 18,
   },
   row: {
     flexDirection: "row",

@@ -1,28 +1,20 @@
-// components\PartySoundControl.js
+// /components/PartySoundControl.js
 
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Switch,
-  StyleSheet,
-  useWindowDimensions,
-} from "react-native";
+import { View, Text, Switch } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
-import { partySoundModes, partySoundToggles } from "../data/partySoundMode";
+import gStyles from "../constants/globalStyles";
 import colors from "../constants/colors";
+import { partySoundModes, partySoundToggles } from "../data/partySoundMode";
 
 export default function PartySoundControl({
   value,
   onChange,
   toggles,
   onToggle,
-  disabled,
+  disabled = false,
 }) {
-  const { width } = useWindowDimensions();
-  const widgetWidth = width > 600 ? 500 : width * 0.9;
-
   // Equalizer state for custom mode
   const [equalizer, setEqualizer] = useState({
     Bass: 50,
@@ -35,13 +27,24 @@ export default function PartySoundControl({
   };
 
   return (
-    <View style={[styles.card, { width: widgetWidth, alignSelf: "center" }]}>
-      <Text style={styles.label}>Party Sound Mode</Text>
-      <View style={styles.pickerWrap}>
+    <View style={[gStyles.card, disabled && { opacity: 0.5 }]}>
+      <Text style={gStyles.label}>Party Sound Mode</Text>
+      <View
+        style={{
+          borderRadius: 10,
+          borderWidth: 1,
+          borderColor: colors.primaryLight,
+          backgroundColor: "#f6f6f8",
+          marginBottom: 14,
+          overflow: "hidden",
+          width: "100%",
+          minHeight: 44,
+          justifyContent: "center",
+        }}
+      >
         <Picker
           selectedValue={value}
           onValueChange={onChange}
-          style={styles.picker}
           dropdownIconColor={colors.primary}
           enabled={!disabled}
         >
@@ -50,9 +53,16 @@ export default function PartySoundControl({
           ))}
         </Picker>
       </View>
-      <View style={styles.togglesWrap}>
+      <View style={{ marginBottom: 10 }}>
         {partySoundToggles.map((t) => (
-          <View key={t.key} style={styles.toggleRow}>
+          <View
+            key={t.key}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 2,
+            }}
+          >
             <Switch
               value={!!toggles[t.key]}
               onValueChange={() => onToggle(t.key)}
@@ -60,19 +70,71 @@ export default function PartySoundControl({
               thumbColor={!!toggles[t.key] ? colors.accent : colors.background}
               disabled={disabled}
             />
-            <Text style={styles.toggleLabel}>{t.label}</Text>
-            <Text style={styles.toggleDesc}>{t.description}</Text>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: "500",
+                color: colors.primary,
+                marginLeft: 3,
+                marginRight: 3,
+              }}
+            >
+              {t.label}
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                color: colors.secondary,
+                marginLeft: 2,
+                flex: 1,
+              }}
+            >
+              {t.description}
+            </Text>
           </View>
         ))}
       </View>
       {/* Equalizer shows only if mode is custom */}
       {value === "custom" && (
-        <View style={styles.eqWrap}>
-          <Text style={styles.eqLabel}>Equalizer</Text>
+        <View
+          style={{
+            marginTop: 12,
+            borderTopWidth: 1,
+            borderTopColor: colors.primaryLight,
+            paddingTop: 10,
+          }}
+        >
+          <Text
+            style={{
+              fontWeight: "600",
+              color: colors.secondary,
+              marginBottom: 6,
+            }}
+          >
+            Equalizer
+          </Text>
           {["Bass", "Mid", "Treble"].map((band) => (
-            <View key={band} style={styles.sliderRow}>
-              <Text style={styles.bandLabel}>{band}</Text>
-              <View style={styles.sliderBg}>
+            <View
+              key={band}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 8,
+              }}
+            >
+              <Text
+                style={{
+                  width: 60,
+                  color: colors.primary,
+                  fontWeight: "600",
+                  fontSize: 14,
+                }}
+              >
+                {band}
+              </Text>
+              <View
+                style={{ flex: 1, alignItems: "center", marginHorizontal: 8 }}
+              >
                 <Slider
                   style={{ width: 120 }}
                   minimumValue={0}
@@ -85,7 +147,16 @@ export default function PartySoundControl({
                   disabled={disabled}
                 />
               </View>
-              <Text style={styles.valueLabel}>{equalizer[band]}</Text>
+              <Text
+                style={{
+                  width: 28,
+                  textAlign: "right",
+                  fontSize: 13,
+                  color: colors.secondary,
+                }}
+              >
+                {equalizer[band]}
+              </Text>
             </View>
           ))}
         </View>
@@ -93,93 +164,3 @@ export default function PartySoundControl({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: 18,
-    padding: 14,
-    marginVertical: 12,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
-    alignSelf: "center",
-  },
-  label: {
-    fontWeight: "700",
-    fontSize: 17,
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  pickerWrap: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
-    backgroundColor: "#f6f6f8",
-    marginBottom: 10,
-    overflow: "hidden",
-    width: "100%",
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  picker: {
-    flex: 1,
-    color: colors.secondary,
-    fontSize: 16,
-    paddingLeft: 8,
-    minHeight: 44,
-    width: "100%",
-  },
-  togglesWrap: {
-    marginTop: 10,
-  },
-  toggleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  toggleLabel: {
-    fontWeight: "600",
-    fontSize: 15,
-    color: colors.primary,
-    marginLeft: 12,
-    minWidth: 80,
-  },
-  toggleDesc: {
-    fontSize: 13,
-    color: colors.secondary,
-    marginLeft: 10,
-    flex: 1,
-  },
-  eqWrap: {
-    marginTop: 18,
-    marginBottom: 2,
-  },
-  eqLabel: {
-    fontWeight: "600",
-    color: colors.secondary,
-    marginBottom: 6,
-    marginLeft: 2,
-  },
-  sliderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  bandLabel: {
-    width: 60,
-    color: colors.primary,
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  sliderBg: {
-    flex: 1,
-    alignItems: "center",
-    marginHorizontal: 8,
-  },
-  valueLabel: {
-    width: 28,
-    textAlign: "right",
-    fontSize: 13,
-    color: colors.secondary,
-  },
-});

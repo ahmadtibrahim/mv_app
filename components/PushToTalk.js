@@ -1,13 +1,16 @@
+// /components/PushToTalk.js
+
 import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import colors from "../constants/colors";
+import gStyles from "../constants/globalStyles";
 
 export default function PushToTalk({ onPressIn, onPressOut }) {
   const [speaking, setSpeaking] = useState(false);
 
   return (
-    <View style={styles.card}>
+    <View style={[gStyles.card, styles.card]}>
       <Pressable
         onPressIn={() => {
           setSpeaking(true);
@@ -27,28 +30,24 @@ export default function PushToTalk({ onPressIn, onPressOut }) {
           size={20}
           color={speaking ? "#fff" : colors.primary}
         />
-        <Text style={[styles.label, speaking && { color: "#fff" }]}>
+        <Text
+          style={[gStyles.label, styles.label, speaking && { color: "#fff" }]}
+        >
           Push to Talk
         </Text>
       </Pressable>
-      <Text style={styles.subLabel}>Hold to speak through chair speaker</Text>
+      <Text style={[gStyles.subLabel, styles.subLabel]}>
+        Hold to speak through chair speaker
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: 18,
     padding: 16,
     marginVertical: 10,
-    elevation: 3,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.13,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
+    borderRadius: 18,
   },
   btn: {
     flexDirection: "row",

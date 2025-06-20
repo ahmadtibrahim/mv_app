@@ -1,4 +1,4 @@
-// components/SmartCupControl.js
+// /components/SmartCupControl.js
 
 import React from "react";
 import {
@@ -11,17 +11,31 @@ import {
 import colors from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function SmartCupControl({ onAction, state = "off" }) {
+export default function SmartCupControl({
+  onAction,
+  state = "off",
+  disabled = false,
+}) {
   const { width } = useWindowDimensions();
   const isTablet = width > 600;
   const widgetWidth = isTablet ? 500 : width * 0.9;
 
   return (
-    <View style={[styles.card, { width: widgetWidth, alignSelf: "center" }]}>
+    <View
+      style={[
+        styles.card,
+        {
+          width: widgetWidth,
+          alignSelf: "center",
+          opacity: disabled ? 0.5 : 1,
+        },
+      ]}
+    >
       <Text style={styles.label}>Smart Cup</Text>
       <TouchableOpacity
         style={styles.openButton}
-        onPress={() => onAction("open")}
+        onPress={() => !disabled && onAction("open")}
+        disabled={disabled}
       >
         <Text style={styles.openButtonText}>Open</Text>
       </TouchableOpacity>
@@ -36,7 +50,8 @@ export default function SmartCupControl({ onAction, state = "off" }) {
                 styles.hotButton,
                 state === "hot2" && styles.activeHot,
               ]}
-              onPress={() => onAction("hot2")}
+              onPress={() => !disabled && onAction("hot2")}
+              disabled={disabled}
             >
               <Text style={styles.tempButtonText}>≪</Text>
             </TouchableOpacity>
@@ -46,7 +61,8 @@ export default function SmartCupControl({ onAction, state = "off" }) {
                 styles.hotButton,
                 state === "hot1" && styles.activeHot,
               ]}
-              onPress={() => onAction("hot1")}
+              onPress={() => !disabled && onAction("hot1")}
+              disabled={disabled}
             >
               <Text style={styles.tempButtonText}>＜</Text>
             </TouchableOpacity>
@@ -59,7 +75,8 @@ export default function SmartCupControl({ onAction, state = "off" }) {
             styles.centerButton,
             state === "off" && { backgroundColor: colors.secondary },
           ]}
-          onPress={() => onAction("off")}
+          onPress={() => !disabled && onAction("off")}
+          disabled={disabled}
         >
           <Ionicons
             name="cafe-outline"
@@ -78,7 +95,8 @@ export default function SmartCupControl({ onAction, state = "off" }) {
                 styles.coldButton,
                 state === "cold1" && styles.activeCold,
               ]}
-              onPress={() => onAction("cold1")}
+              onPress={() => !disabled && onAction("cold1")}
+              disabled={disabled}
             >
               <Text style={styles.tempButtonText}>＞</Text>
             </TouchableOpacity>
@@ -88,7 +106,8 @@ export default function SmartCupControl({ onAction, state = "off" }) {
                 styles.coldButton,
                 state === "cold2" && styles.activeCold,
               ]}
-              onPress={() => onAction("cold2")}
+              onPress={() => !disabled && onAction("cold2")}
+              disabled={disabled}
             >
               <Text style={styles.tempButtonText}>≫</Text>
             </TouchableOpacity>
@@ -98,7 +117,8 @@ export default function SmartCupControl({ onAction, state = "off" }) {
       </View>
       <TouchableOpacity
         style={styles.openButton}
-        onPress={() => onAction("close")}
+        onPress={() => !disabled && onAction("close")}
+        disabled={disabled}
       >
         <Text style={styles.openButtonText}>Close</Text>
       </TouchableOpacity>

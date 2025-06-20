@@ -1,62 +1,55 @@
+// /components/ModeHeader.js
+
 import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, Text, Switch, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import gStyles from "../constants/globalStyles";
+import colors from "../constants/colors";
 
 export default function ModeHeader({
-  isActive,
+  isActive = false,
   onBack,
-  showToggle,
-  toggleValue,
+  showToggle = true,
+  toggleValue = false,
   onToggle,
+  label = "",
 }) {
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingHorizontal: 10,
-        height: 56,
-        marginTop: 2,
-      }}
-    >
-      <TouchableOpacity
-        disabled={isActive}
-        onPress={!isActive ? onBack : undefined}
-        style={{ padding: 8 }}
-      >
+    <View style={gStyles.header}>
+      {/* Back button */}
+      <TouchableOpacity onPress={onBack} style={{ marginRight: 12 }}>
         <Ionicons
           name="arrow-back"
-          size={28}
-          color={isActive ? "#bbb" : "#397afc"}
+          size={24}
+          color={isActive ? colors.primary : colors.secondary}
         />
       </TouchableOpacity>
-      {showToggle && (
-        <TouchableOpacity
-          onPress={onToggle}
+
+      {/* Optional label (mode name) */}
+      {label ? (
+        <Text
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            padding: 7,
-            borderRadius: 15,
-            backgroundColor: toggleValue ? "#4b7bec" : "#eee",
+            fontWeight: "700",
+            fontSize: 18,
+            color: colors.primary,
+            flex: 1,
           }}
         >
-          <Ionicons
-            name={toggleValue ? "power" : "power-outline"}
-            size={22}
-            color={toggleValue ? "#fff" : "#bbb"}
-          />
-          <Text
-            style={{
-              color: toggleValue ? "#fff" : "#bbb",
-              fontWeight: "700",
-              marginLeft: 6,
-            }}
-          >
-            {toggleValue ? "Active" : "Off"}
-          </Text>
-        </TouchableOpacity>
+          {label}
+        </Text>
+      ) : (
+        <View style={{ flex: 1 }} />
+      )}
+
+      {/* Activation toggle */}
+      {showToggle && onToggle && (
+        <Switch
+          value={toggleValue}
+          onValueChange={onToggle}
+          trackColor={{ false: colors.secondary, true: colors.primary }}
+          thumbColor={toggleValue ? colors.accent : colors.background}
+          ios_backgroundColor={colors.background}
+        />
       )}
     </View>
   );

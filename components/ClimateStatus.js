@@ -1,4 +1,4 @@
-// components/ClimateStatus.js
+// /components/ClimateStatus.js
 
 import React, { useState } from "react";
 import {
@@ -44,13 +44,13 @@ export default function ClimateStatus({
   humidity = 40,
   gasStatus = "Safe",
   temperature = 22,
+  disabled = false,
 }) {
   const { width } = useWindowDimensions();
-  const widgetWidth = width > 600 ? 500 : width * 0.9;
+  const widgetWidth = width > 600 ? 500 : width * 0.95;
 
-  const innerWidth = widgetWidth - 16; // card padding
-  const baseSize = (innerWidth - 32) / 4; // four boxes
-  const boxHeight = baseSize + 20;
+  const baseSize = (widgetWidth - 16 - 12) / 4; // card padding and margin
+  const boxHeight = baseSize + 14;
 
   const [isCelsius, setIsCelsius] = useState(true);
   const displayTemp = isCelsius
@@ -58,12 +58,21 @@ export default function ClimateStatus({
     : `${Math.round((temperature * 9) / 5 + 32)}°F`;
 
   return (
-    <View style={[styles.card, { width: widgetWidth, alignSelf: "center" }]}>
+    <View
+      style={[
+        styles.card,
+        {
+          width: widgetWidth,
+          alignSelf: "center",
+          opacity: disabled ? 0.5 : 1,
+        },
+      ]}
+    >
       <View style={styles.row}>
         <StatusBox
           icon="cloud-outline"
           value={airQuality === "Disabled" ? "—" : airQuality + "%"}
-          label="Air Quality"
+          label="Air"
           color={getStatusColor("aqi", airQuality)}
           size={baseSize}
           height={boxHeight}
@@ -79,7 +88,7 @@ export default function ClimateStatus({
         <StatusBox
           icon="warning-outline"
           value={gasStatus === "Disabled" ? "—" : gasStatus}
-          label="Gas / Smoke"
+          label="Gas"
           color={getStatusColor("gas", gasStatus)}
           size={baseSize}
           height={boxHeight}
@@ -101,15 +110,15 @@ export default function ClimateStatus({
 
 function StatusBox({ icon, value, label, color, size, height }) {
   const isDisabled = color === disabledColor;
-  const bg = color + "22";
+  const bg = color + "1A"; // translucent bg
   return (
-    <View style={[styles.box, { width: size, height, marginHorizontal: 4 }]}>
+    <View style={[styles.box, { width: size, height, marginHorizontal: 3 }]}>
       <View
         style={[
           styles.innerBox,
           {
             backgroundColor: bg,
-            borderColor: bg, // match border to background
+            borderColor: color,
           },
         ]}
       >
@@ -148,7 +157,7 @@ const styles = StyleSheet.create({
   },
   box: {
     borderRadius: 14,
-    borderWidth: 0,
+    borderWidth: 1,
     overflow: "hidden",
   },
   innerBox: {

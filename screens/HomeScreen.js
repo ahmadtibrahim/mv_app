@@ -1,8 +1,11 @@
+// /screens/HomeScreen.js
+
 import React from "react";
 import { SafeAreaView, ScrollView } from "react-native";
+import colors from "../constants/colors";
+import gStyles from "../constants/globalStyles";
 import RestControl from "../components/RestControl";
 import SmartCupControl from "../components/SmartCupControl";
-import colors from "../constants/colors";
 
 export default function HomeScreen() {
   return (

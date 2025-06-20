@@ -1,3 +1,5 @@
+// /components/MusicPlayer.js
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -12,6 +14,7 @@ import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
 import { babyModeMusicList } from "../data/babyModeMusicList";
 import colors from "../constants/colors";
+import gStyles from "../constants/globalStyles";
 
 const { width } = Dimensions.get("window");
 
@@ -69,12 +72,18 @@ export default function MusicPlayer() {
     `${Math.floor(sec / 60)}:${sec % 60 < 10 ? "0" : ""}${sec % 60}`;
 
   return (
-    <View style={styles.card}>
+    <View style={[gStyles.card, styles.card]}>
       <Pressable onPress={() => setModalVisible(true)} style={styles.header}>
         <View>
-          <Text style={styles.label}>{playlist[currentIndex].title}</Text>
+          <Text style={[gStyles.label, styles.label]}>
+            {playlist[currentIndex].title}
+          </Text>
           <Text
-            style={[styles.label, { fontSize: 14, color: colors.secondary }]}
+            style={[
+              gStyles.label,
+              styles.label,
+              { fontSize: 14, color: colors.secondary },
+            ]}
           >
             {playlist[currentIndex].description}
           </Text>
@@ -159,7 +168,7 @@ export default function MusicPlayer() {
       <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.backdrop}>
           <View style={styles.modal}>
-            <Text style={[styles.label, { marginBottom: 12 }]}>
+            <Text style={[gStyles.label, styles.label, { marginBottom: 12 }]}>
               Select a Song
             </Text>
             <FlatList
@@ -182,6 +191,7 @@ export default function MusicPlayer() {
                 >
                   <Text
                     style={[
+                      gStyles.label,
                       styles.label,
                       index === currentIndex && { color: colors.primaryLight },
                     ]}
@@ -196,7 +206,13 @@ export default function MusicPlayer() {
               onPress={() => setModalVisible(false)}
               style={{ alignSelf: "flex-end", padding: 6 }}
             >
-              <Text style={[styles.label, { color: colors.primaryLight }]}>
+              <Text
+                style={[
+                  gStyles.label,
+                  styles.label,
+                  { color: colors.primaryLight },
+                ]}
+              >
                 OK
               </Text>
             </Pressable>
@@ -209,17 +225,9 @@ export default function MusicPlayer() {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: 18,
     padding: 16,
     marginVertical: 10,
-    elevation: 3,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.13,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
+    borderRadius: 18,
   },
   header: {
     flexDirection: "row",

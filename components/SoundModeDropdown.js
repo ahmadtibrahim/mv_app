@@ -1,59 +1,96 @@
-// components/SoundModeDropdown.js
+// /components/SoundModeDropdown.js
 
 import React from "react";
-import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
+import { View, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
+import gStyles from "../constants/globalStyles";
 import colors from "../constants/colors";
 
 export default function SoundModeDropdown({
-  modes = [],
+  modes,
   value,
   onChange,
-  showEqualizer,
+  showEqualizer = false,
   equalizerState,
   onEqualizerChange,
+  disabled = false,
 }) {
-  const { width } = useWindowDimensions();
-  const isTablet = width > 600;
-  const widgetWidth = isTablet ? 500 : width * 0.9;
-
   return (
-    <View style={[styles.card, { width: widgetWidth, alignSelf: "center" }]}>
-      <Text style={styles.label}>Sound Mode</Text>
-      <View style={styles.pickerWrap}>
+    <View style={[gStyles.card, { opacity: disabled ? 0.5 : 1 }]}>
+      <Text style={gStyles.label}>Sound Mode</Text>
+      <View
+        style={{
+          borderRadius: 10,
+          borderWidth: 1,
+          borderColor: colors.primaryLight,
+          backgroundColor: "#f6f6f8",
+          marginBottom: 10,
+          overflow: "hidden",
+        }}
+      >
         <Picker
           selectedValue={value}
           onValueChange={onChange}
-          style={styles.picker}
           dropdownIconColor={colors.primary}
+          enabled={!disabled}
         >
           {modes.map((mode) => (
             <Picker.Item key={mode.key} label={mode.label} value={mode.key} />
           ))}
         </Picker>
       </View>
-      {showEqualizer && equalizerState && onEqualizerChange && (
-        <View style={styles.eqWrap}>
-          <Text style={styles.eqLabel}>Equalizer</Text>
+      {showEqualizer && (
+        <View style={{ marginTop: 8 }}>
+          <Text
+            style={{
+              fontWeight: "600",
+              color: colors.secondary,
+              marginBottom: 6,
+            }}
+          >
+            Equalizer
+          </Text>
           {["Bass", "Mid", "Treble"].map((band) => (
-            <View key={band} style={styles.sliderRow}>
-              <Text style={styles.bandLabel}>{band}</Text>
-              <View style={styles.sliderBg}>
-                <Slider
-                  style={{ width: 120 }}
-                  minimumValue={0}
-                  maximumValue={100}
-                  value={equalizerState[band]}
-                  onValueChange={(value) =>
-                    onEqualizerChange(band, Math.round(value))
-                  }
-                  minimumTrackTintColor={colors.primary}
-                  maximumTrackTintColor={colors.muted}
-                  thumbTintColor={colors.primary}
-                />
-              </View>
-              <Text style={styles.valueLabel}>{equalizerState[band]}</Text>
+            <View
+              key={band}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 8,
+              }}
+            >
+              <Text
+                style={{
+                  width: 60,
+                  color: colors.primary,
+                  fontWeight: "600",
+                  fontSize: 14,
+                }}
+              >
+                {band}
+              </Text>
+              <Slider
+                style={{ flex: 1, marginHorizontal: 8 }}
+                minimumValue={0}
+                maximumValue={100}
+                value={equalizerState[band]}
+                onValueChange={(v) => onEqualizerChange(band, Math.round(v))}
+                minimumTrackTintColor={colors.primary}
+                maximumTrackTintColor={colors.muted}
+                thumbTintColor={colors.primary}
+                disabled={disabled}
+              />
+              <Text
+                style={{
+                  width: 28,
+                  textAlign: "right",
+                  fontSize: 13,
+                  color: colors.secondary,
+                }}
+              >
+                {equalizerState[band]}
+              </Text>
             </View>
           ))}
         </View>
@@ -61,70 +98,3 @@ export default function SoundModeDropdown({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: 18,
-    padding: 14,
-    marginVertical: 12,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
-    alignSelf: "center",
-  },
-  label: {
-    fontWeight: "700",
-    fontSize: 17,
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  pickerWrap: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.primaryLight,
-    backgroundColor: "#f6f6f8",
-    marginBottom: 8,
-    overflow: "hidden",
-    width: "100%",
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  picker: {
-    flex: 1,
-    color: colors.secondary,
-    fontSize: 16,
-    paddingLeft: 8,
-    minHeight: 44,
-    width: "100%",
-  },
-  eqWrap: {
-    marginTop: 16,
-  },
-  eqLabel: {
-    fontWeight: "600",
-    color: colors.secondary,
-    marginBottom: 4,
-  },
-  sliderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  bandLabel: {
-    width: 60,
-    color: colors.primary,
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  sliderBg: {
-    flex: 1,
-    alignItems: "center",
-    marginHorizontal: 8,
-  },
-  valueLabel: {
-    width: 28,
-    textAlign: "right",
-    fontSize: 13,
-    color: colors.secondary,
-  },
-});
